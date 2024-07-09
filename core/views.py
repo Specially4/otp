@@ -1,6 +1,7 @@
+import pyotp
 from django.shortcuts import render
-from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView, UpdateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import permissions
+from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView, UpdateAPIView, ListAPIView
 
 from core.models import User, QrCode
 from core.serializers import UserCreateSerializer, RetrieveUserSerializer, QrCodeCreateSerializer, RetrieveQrCodeSerializer
@@ -13,26 +14,46 @@ class CreateUserView(CreateAPIView):
 
 
 class RetrieveUserView(RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    model = User
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = RetrieveUserSerializer
+    lookup_field = 'username'
+
+    def get_queryset(self) -> User:
+        return User.objects.all()
+
+    # def get_object(self) -> User:
+    #     return User.objects.all()
+
+class RetrieveListUserView(ListAPIView):
+    model = User
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = RetrieveUserSerializer
 
-    def get_object(self) -> User:
-        return self.request.user.all()
+    def get_queryset(self) -> User:
+        return User.objects.all()
 
 
 class CreateQrCodeView(CreateAPIView):
     queryset = QrCode.objects.all()
     serializer_class = QrCodeCreateSerializer
+    lookup_field = 'user'
+    lookup_url_kwarg = 'username'
 
     def perform_create(self, serializer):
         user = self.request.user
-        qr_code = get_qrcode(user)
-        serializer.save(user=user, key=qr_code['key'], qr_code_image=qr_code['path'])
+        key = pyotp.random_base32()
+        qr_code = get_qrcode(user, key)
+        serializer.save(key=key, qr_code_image=qr_code, user=user)
+        print(f'user: {user.password}, key: {key}')
 
 
 class RetrieveQrCodeView(RetrieveUpdateDestroyAPIView):
     queryset = QrCode.objects.all()
     serializer_class = RetrieveQrCodeSerializer
+    lookup_field = 'user'
+    lookup_url_kwarg = 'username'
 
-    # def get_object(self) -> QrCode:
-    #     return self.request.user.username
+    def get(self, request, *args, **kwargs):
+        # if 
+        return super().get(request, *args, **kwargs)
