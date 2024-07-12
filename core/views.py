@@ -49,11 +49,16 @@ class CreateQrCodeView(CreateAPIView):
 
 
 class RetrieveQrCodeView(RetrieveUpdateDestroyAPIView):
-    queryset = QrCode.objects.all()
+    queryset = User.objects.all()
     serializer_class = RetrieveQrCodeSerializer
-    lookup_field = 'user'
-    lookup_url_kwarg = 'username'
+    lookup_field = 'username'
 
-    def get(self, request, *args, **kwargs):
-        # if 
-        return super().get(request, *args, **kwargs)
+    # def get_queryset(self) -> User:
+    #     print(f'user: {self.request.user.id}')
+    #     return User.objects.all()
+
+    # def get(self, request, *args, **kwargs):
+    #     user = User.objects.get(username=kwargs["username"])
+    #     qr_code = QrCode.objects.filter(user=user).first()
+    #     print(f'user: {user.id}, qrcode: {qr_code.id}, kwargs: {kwargs}')
+    #     return qr_code

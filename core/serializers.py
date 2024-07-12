@@ -59,27 +59,28 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = [
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+        ]
+
+
+class RetrieveQrCodeSerializer(serializers.ModelSerializer):
+    qr_codes = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='key'
+    )
+    
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'qr_codes')
 
 
 class QrCodeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = QrCode
         fields = []
-
-
-class RetrieveQrCodeSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField(read_only=True)
-    user = serializers.ReadOnlyField(source='user.username')
-
-    class Meta:
-        model = QrCode
-        fields = [
-            'id',
-            'key',
-            'qr_code_image',
-            'created',
-            'updated',
-            'user',
-            'user_id'
-        ]
