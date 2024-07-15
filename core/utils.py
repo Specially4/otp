@@ -1,5 +1,5 @@
 import pyotp
-import qrcode
+import segno
 import time
 
 from .models import User
@@ -10,8 +10,10 @@ def get_uri(name: str, key: str, issuer_name: str | None = 'TEST_OTP'):
     #encrypted_uri = encrypted_uri(uri)
     return uri
 
-def get_qrcode(user: User, key: str) -> str:
+
+def get_qrcode(user: User, key: str):
     uri = get_uri(name=user.username, key=key)
     path = f'media/qr_{user.username}.png'
-    qrcode.make(uri).save(path)
+    qr = segno.make_qr(uri)
+    qr.save(path, scale=10)
     return path

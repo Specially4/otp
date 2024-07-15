@@ -1,10 +1,12 @@
 import pyotp
 from django.shortcuts import render
 from rest_framework import permissions
-from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView, UpdateAPIView, ListAPIView
+from rest_framework.generics import (CreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView, UpdateAPIView,
+                                     ListAPIView)
 
 from core.models import User, QrCode
-from core.serializers import UserCreateSerializer, RetrieveUserSerializer, QrCodeCreateSerializer, RetrieveQrCodeSerializer
+from core.serializers import (UserCreateSerializer, RetrieveUserSerializer, QrCodeCreateSerializer,
+                              RetrieveQrCodeSerializer)
 from core.utils import get_qrcode
 
 
@@ -24,6 +26,7 @@ class RetrieveUserView(RetrieveUpdateDestroyAPIView):
 
     # def get_object(self) -> User:
     #     return User.objects.all()
+
 
 class RetrieveListUserView(ListAPIView):
     model = User

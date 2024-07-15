@@ -72,9 +72,10 @@ class RetrieveQrCodeSerializer(serializers.ModelSerializer):
     qr_codes = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field='key'
+        slug_field='qr_code_image',
     )
-    
+    # qr_codes = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = User
         fields = ('username', 'email', 'qr_codes')

@@ -23,8 +23,8 @@ class QrCode(models.Model):
     updated = models.DateTimeField(verbose_name='Дата изменения')
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE, related_name='qr_codes')
 
-    def __str__(self):
-        return self.id
+    # def __str__(self):
+    #     return self.id
 
     def save(self, *args, **kwargs):
         if not self.id:
