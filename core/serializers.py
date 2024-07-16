@@ -1,4 +1,5 @@
 from django.contrib.auth.password_validation import validate_password
+from django.core.files.base import ContentFile
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
@@ -68,20 +69,39 @@ class RetrieveUserSerializer(serializers.ModelSerializer):
         ]
 
 
+# class RetrieveQrCodeSerializer(serializers.ModelSerializer):
+#     qr_codes = serializers.SlugRelatedField(
+#         many=True,
+#         read_only=True,
+#         slug_field='image_url',
+#     )
+#     # qr_codes = serializers.StringRelatedField(many=True, source='qr_code_image')
+
+#     class Meta:
+#         model = User
+#         fields = ('username', 'email', 'qr_codes')
+
+
 class RetrieveQrCodeSerializer(serializers.ModelSerializer):
-    qr_codes = serializers.SlugRelatedField(
-        many=True,
-        read_only=True,
-        slug_field='qr_code_image',
-    )
-    # qr_codes = serializers.StringRelatedField(many=True)
+    # qr_codes = serializers.SlugRelatedField(
+    #     many=True,
+    #     read_only=True,
+    #     slug_field='image_url',
+    # )
+    # qr_codes = serializers.StringRelatedField(many=True, source='qr_code_image')
+    user = serializers.CharField(source='user__username')
 
     class Meta:
-        model = User
-        fields = ('username', 'email', 'qr_codes')
+        model = QrCode
+        fields = '__all__'
 
 
 class QrCodeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = QrCode
         fields = []
+
+    def save(self, **kwargs):
+        qrcode = QrCode(user=kwargs['user'], key=kwargs['key'])
+        qrcode.qr_code_image.save(f'qr_{kwargs["username"]}.png', ContentFile(kwargs['qr_code_image'].getvalue()), save=False)
+        qrcode.save()

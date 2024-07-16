@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
+from otp import settings
 
 class User(AbstractUser):
     class Meta:
@@ -23,8 +24,13 @@ class QrCode(models.Model):
     updated = models.DateTimeField(verbose_name='Дата изменения')
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE, related_name='qr_codes')
 
-    # def __str__(self):
-    #     return self.id
+    def __str__(self):
+        return self.id
+
+    @property
+    # Для получения ссылки на изображение QR-кода
+    def image_url(self):
+        return f'{self.qr_code_image.url}'
 
     def save(self, *args, **kwargs):
         if not self.id:

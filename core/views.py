@@ -46,15 +46,30 @@ class CreateQrCodeView(CreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user
         key = pyotp.random_base32()
-        qr_code = get_qrcode(user, key)
-        serializer.save(key=key, qr_code_image=qr_code, user=user)
+        out = get_qrcode(user, key)
+        serializer.save(key=key, qr_code_image=out, user=user, username=user.username)
         print(f'user: {user.password}, key: {key}')
 
 
 class RetrieveQrCodeView(RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    """
+    Отображение QR-кода конкретного пользователя и обновление/удаление QR-кода.
+    Надо до конца разобраться с реализацией, т.к не получается получить QR-код по username
+    Возможно стоит реализовать отдельно отображение и отдельно обновление QR-кода.
+    """
+    model = QrCode
     serializer_class = RetrieveQrCodeSerializer
-    lookup_field = 'username'
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'user'
+    lookup_url_kwarg = 'username'
+
+    def get_queryset(self) -> QrCode:
+        return QrCode.objects.filter(user=self.request.user)
+
+# class RetrieveQrCodeView(RetrieveUpdateDestroyAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = RetrieveQrCodeSerializer
+#     lookup_field = 'username'
 
     # def get_queryset(self) -> User:
     #     print(f'user: {self.request.user.id}')
