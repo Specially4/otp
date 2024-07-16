@@ -4,8 +4,8 @@
 * ![version](https://img.shields.io/badge/Python-v3.11.9-informational/?style=for-the-badge&logo=Python)
 * ![version](https://img.shields.io/badge/Django-v5.0.6-informational/?style=for-the-badge&logo=Django)
 
->[!NOTE]Note
->Надо узнать как реализовать синхронизацию с LDAP и работу с FreeRadius
+>[!NOTE]
+Надо узнать как реализовать синхронизацию с LDAP и работу с FreeRadius
 
 >[!TIP]
 Стоит добавить тестирование. 
