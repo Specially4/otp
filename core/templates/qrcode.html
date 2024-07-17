@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test OTP</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <h1>Ваш QR-Code</h1>
+    <p>Для входа в приложение вам необходимо сканировать этот QR-код.</p>
+    <p>Пользователь {{ user.username }}</p>    
+    <img src="{{ qr_code.image_url }}" alt="QR-Code" />
+    <p><a class="nav-link" href="{% url 'create_qr_code' username=user.username %}">Создать QR-Code</a></p>
+</body>
+</html>
