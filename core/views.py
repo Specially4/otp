@@ -1,5 +1,5 @@
 import pyotp
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.files.base import ContentFile
 from rest_framework import permissions
 from rest_framework.generics import (CreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView, UpdateAPIView,
@@ -8,7 +8,7 @@ from rest_framework.generics import (CreateAPIView, RetrieveUpdateDestroyAPIView
 from core.models import User, QrCode
 from core.serializers import (UserCreateSerializer, RetrieveUserSerializer, QrCodeCreateSerializer,
                               RetrieveQrCodeSerializer)
-from core.utils import get_qrcode
+from core.utils import create_qrcode_image, check_token
 
 
 # class CreateUserView(CreateAPIView):
@@ -82,10 +82,12 @@ from core.utils import get_qrcode
 #     #     print(f'user: {user.id}, qrcode: {qr_code.id}, kwargs: {kwargs}')
 #     #     return qr_code
 
-def get_qr_code(request, username):
+def get_qrcode(request, username):
+    """
+    Отображение QR-кода конкретного пользователя.
+    """
     user = User.objects.get(username=username)
-    qrcode = QrCode.objects.filter(user=user).first()
-    # qrcode = get_qrcode(user, key)
+    qrcode = QrCode.objects.filter(user=user).last()
 
     data = {
         'user': user,
@@ -93,15 +95,33 @@ def get_qr_code(request, username):
     }
     return render(request, 'qrcode.html', context=data)
 
-def create_qr_code(request, username):
+
+def create_user_qrcode(request, username):
+    """
+    Создание QR-кода для конкретного пользователя и сохранение QR-кода в БД.
+    """
     user = User.objects.get(username=username)
     key = pyotp.random_base32()
-    out = get_qrcode(user, key)
+    out = create_qrcode_image(user, key)
     qrcode = QrCode(user=user, key=key)
     qrcode.qr_code_image.save(f'qr_{username}.png', ContentFile(out.getvalue()), save=False)
     qrcode.save()
-    data = {
-        'user': user,
-        'qr_code': qrcode,
-    }
-    return render(request, 'qrcode.html', context=data)
+
+    return redirect(get_qrcode, username=username)
+
+
+def check_qrcode(request, username):
+    """
+    Проверка токена на валидность для конкретного пользователя.
+    """
+    user = User.objects.get(username=username)
+    key = QrCode.objects.filter(user=user).last().key
+    text = 'Нет доступа'
+    if request.method == 'POST':
+        token = request.POST.get('token')
+        if check_token(key, token):
+            text = "Success"
+        else:
+            text = "Bad Token"
+    
+    return render(request, 'check.html', {'status': text})

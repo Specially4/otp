@@ -11,9 +11,9 @@ urlpatterns = [
     # path('user/<str:username>/', views.RetrieveUserView.as_view(), name='user'),
     # Создание и просмотр QR-кода
     # path('user/<str:username>/qr-codes', views.RetrieveQrCodeView.as_view(), name='qr-codes'),
-    path('user/<str:username>/qr_codes', views.get_qr_code, name='qr-codes'),
-    path('user/<str:username>/create_qr_code', views.create_qr_code, name='create_qr_code'),
-    # path('qr-codes/<int:pk>/', views.QrCodeDetailView.as_view(), name='qr-code-detail'),
+    path('user/<str:username>/qrcode', views.get_qrcode, name='qrcode'),
+    path('user/<str:username>/qrcode/create', views.create_user_qrcode, name='create_qrcode'),
+    path('user/<str:username>/qrcode/check', views.check_qrcode, name='check_qrcode'),
 ]
 
 if settings.DEBUG:

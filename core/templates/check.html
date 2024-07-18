@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test OTP</title>
+    <title>Check OTP</title>
     <meta charset="utf-8" />
 </head>
 <body>
-    <h1>Проверка одноразового пароля</h1>
     <p>Введите OTP код полученный в приложение.</p>
-    <form id="otpForm">
+    <form method="post" action="check">
+        {% csrf_token %}
         <label for="otp">Enter OTP:</label>
-        <input type="text" id="otp" name="otp" required />
+        <input type="text" id="otp" name="token" required />
         <button type="submit">Submit</button>
     </form>
+    <p>Статус проверки: {{ status }}</p>
 </body>
 </html>
